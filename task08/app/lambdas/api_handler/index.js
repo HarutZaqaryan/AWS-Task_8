@@ -1,31 +1,54 @@
 // import OpenMeteoAPI from "../layers/api_handler_layer/openMateoAPI";
 import axios from "axios";
-class OpenMeteoAPI {
-  constructor(latitude, longitude) {
-    this.baseUrl =
-      "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
-    this.latitude = latitude;
-    this.longitude = longitude;
+// class OpenMeteoAPI {
+//   constructor(latitude, longitude) {
+//     this.baseUrl =
+//       "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m";
+//     this.latitude = latitude;
+//     this.longitude = longitude;
 
-    console.log("~~~latitude(from lambda layer)~~~", this.latitude);
-    console.log("~~~longitude(from lambda layer)~~~", this.longitude);
+//     console.log("~~~latitude(from lambda layer)~~~", this.latitude);
+//     console.log("~~~longitude(from lambda layer)~~~", this.longitude);
+//   }
+
+//   async getWeatherForecast() {
+//     try {
+//       const response = await axios.get(this.baseUrl, {
+//         params: {
+//           latitude: this.latitude,
+//           longitude: this.longitude,
+//           current: "temperature_2m,wind_speed_10m",
+//           hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m",
+//         },
+//       });
+//       console.log("~~~RESPONSE(from lambda LAYER)~~~", response);
+
+//       return response.data;
+//     } catch (error) {
+//       console.error("~~~Error from layer's try", error);
+//       throw error;
+//     }
+//   }
+// }
+
+class OpenMeteoAPI {
+  constructor() {
+    this.baseUrl = "https://api.open-meteo.com/v1/forecast";
   }
 
-  async getWeatherForecast() {
-    try {
-      const response = await axios.get(this.baseUrl, {
-        params: {
-          latitude: this.latitude,
-          longitude: this.longitude,
-          current: "temperature_2m,wind_speed_10m",
-          hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m",
-        },
-      });
-      console.log("~~~RESPONSE(from lambda LAYER)~~~", response);
+  async getWeatherForecast(latitude, longitude) {
+    const params = {
+      latitude: latitude,
+      longitude: longitude,
+      current: "temperature_2m,wind_speed_10m",
+      hourly: "temperature_2m,relative_humidity_2m,wind_speed_10m",
+    };
 
+    try {
+      const response = await axios.get(this.baseUrl, { params });
       return response.data;
     } catch (error) {
-      console.error("~~~Error from layer's try", error);
+      console.error("Error fetching weather data:", error);
       throw error;
     }
   }
@@ -33,16 +56,20 @@ class OpenMeteoAPI {
 
 export const handler = async (event) => {
   console.log("~~~EVENT(from lambda func)~~~", event);
-  const latitude = event.queryStringParameters.latitude || "52.52";
-  console.log("~~~latitude(from lambda func)~~~", latitude);
-  const longitude = event.queryStringParameters.longitude || "13.41";
-  console.log("~~~longitude(from lambda func)~~~", longitude);
 
-  const api = new OpenMeteoAPI(latitude, longitude);
+  //   const latitude = event.queryStringParameters.latitude || "52.52";
+  //   console.log("~~~latitude(from lambda func)~~~", latitude);
+  //   const longitude = event.queryStringParameters.longitude || "13.41";
+  //   console.log("~~~longitude(from lambda func)~~~", longitude);
+  
+  const latitude = 52.52;
+  const longitude = 13.41;
+
+  const api = new OpenMeteoAPI();
   console.log("~~~API Class instance(from lambda func)~~~", api);
 
   try {
-    const forecast = await api.getWeatherForecast();
+    const forecast = await api.getWeatherForecast(latitude,longitude);
     console.log("~~~forecast(from lambda func)~~~", event);
     return {
       statusCode: 200,
