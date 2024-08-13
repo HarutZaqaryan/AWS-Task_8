@@ -1,4 +1,5 @@
-import OpenMeteoAPI from "/opt/nodejs/openMeteoApi.js";
+// import OpenMeteoAPI from "/opt/nodejs/openMeteoApi.js";
+import OpenMeteoAPI from "../layers/api_handler_layer/openMateoAPI";
 
 export const handler = async (event) => {
   console.log("~~~EVENT(from lambda func)~~~", event);
